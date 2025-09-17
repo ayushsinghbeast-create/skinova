@@ -3,49 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkinovaAI</title>
+  <title>SkinovaAI Beta</title>
   <style>
-    body { font-family: Arial; background: #f0f8ff; color: #333; text-align: center; padding: 20px; }
-    .container { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; }
-    input, select, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #5cbdf5; color: white; border: none; cursor: pointer; }
-    button:hover { background: #4aa8dc; }
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f8ff;
+      margin: 0;
+    }
+    .form-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+    h2 { color: #007bff; }
+    input, select {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover { background: #0056b3; }
+    .result { margin-top: 15px; color: green; }
   </style>
 </head>
 <body>
-  <h2>SkinovaAI - Beta</h2>
-  <div class="container">
+  <div class="form-container">
+    <h2>SkinovaAI - Beta</h2>
     <input type="text" id="name" placeholder="Name" required>
     <input type="email" id="email" placeholder="Email" required>
     <select id="skinType">
       <option value="Oily">Oily</option>
       <option value="Dry">Dry</option>
       <option value="Normal">Normal</option>
-      <option value="Sensitive">Sensitive</option>
     </select>
     <input type="text" id="problem" placeholder="Skin Problem (e.g. Acne)">
-    <input type="text" id="goals" placeholder="Skin Goals (e.g. Glow)">
-    <button onclick="submitData()">Sign Up</button>
+    <input type="text" id="goal" placeholder="Skin Goals (e.g. Glow)">
+    <button onclick="submitForm()">Sign Up</button>
+    <div class="result" id="result"></div>
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbw-o8Z0ix2pZyo9fHioPgMywcpfaKKGscNzWZdRh8MEsI39KF0fG8L3MDo-CINw2A7XOw/exec";
-
-    function submitData() {
-      let data = {
+    function submitForm() {
+      const data = {
         name: document.getElementById('name').value,
         email: document.getElementById('email').value,
         skinType: document.getElementById('skinType').value,
-        problem: document.getElementById('problem').value,
-        goals: document.getElementById('goals').value
+        skinProblem: document.getElementById('problem').value,
+        skinGoal: document.getElementById('goal').value
       };
 
-      fetch(scriptURL, {
-        method: 'POST',
+      fetch("https://script.google.com/macros/s/AKfycbxDrwk2YKhz3FlCzSaHG9Lymc4FSKYCUgact8glmucBOT0dC0MsvpHBjYvZoNVesMJEAA/exec", {
+        method: "POST",
         body: JSON.stringify(data)
       })
-      .then(res => alert("Signup Successful!"))
-      .catch(err => alert("Error: " + err.message));
+      .then(res => res.json())
+      .then(response => {
+        document.getElementById('result').innerHTML = 
+          "🎉 " + response.recommendation + "<br>💸 Your Discount Code: " + response.discount;
+      })
+      .catch(() => {
+        document.getElementById('result').innerHTML = "❌ Network Error. Try Again!";
+      });
     }
   </script>
 </body>
